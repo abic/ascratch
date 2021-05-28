@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-from ascratch.dirpaths import workspace
 import asyncio
 import click
 import sys
@@ -10,8 +9,9 @@ import toml
 from pathlib import Path
 from . import TOOLNAME, ToolContainer, MyService, dirpaths
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
+from dependency_injector import providers
 from dependency_injector.wiring import inject, Provide
 
 
@@ -44,12 +44,38 @@ def _find_root() -> Path:
     return dir
 
 
+def _default_config(config: providers.Configuration) -> None:
+    config.from_dict(
+        {"service": {"addr": "127.0.0.1", "port": 1234, "api_key": "default:key",}}
+    )
+
+
+def _options_config(
+    config: providers.Configuration, options: argparse.Namespace
+) -> None:
+    options_config: Dict[str, Any] = {}
+
+    if options.api_key is not None:
+        options_config.setdefault("service", {})["api_key"] = options.api_key
+
+    config.from_dict(options_config)
+
+
+def _toml_config(config: providers.Configuration, config_path: Path) -> None:
+    try:
+        config.from_dict(dict(toml.load(config_path)))
+    except FileNotFoundError:
+        pass
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(prog=TOOLNAME)
 
     parser.add_argument(
         "-k", "--api-key",
     )
+
+    parser.add_argument("-c", "--config", type=Path)
 
     options: argparse.Namespace = parser.parse_args()
 
@@ -58,17 +84,12 @@ def main() -> None:
 
     tool = ToolContainer(wksp_dirs=wksp_dirs, user_dirs=user_dirs)
 
-    try:
-        tool.config.from_dict(dict(toml.load(user_dirs.config / "config.toml")))
-    except FileNotFoundError:
-        pass
-
-    try:
-        tool.config.from_dict(dict(toml.load(wksp_dirs.config / "config.toml")))
-    except FileNotFoundError:
-        pass
-
-    tool.config.from_dict({"service": vars(options)})
+    _default_config(tool.config)
+    _toml_config(tool.config, user_dirs.config / "config.toml")
+    _toml_config(tool.config, wksp_dirs.config / "config.toml")
+    if options.config is not None:
+        _toml_config(tool.config, options.config)
+    _options_config(tool.config, options)
 
     tool.wire(modules=[sys.modules[__name__]])
 
