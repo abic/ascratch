@@ -10,6 +10,7 @@ from .dirpaths import WorkspaceDirPaths, UserDirPaths, user, workspace
 class MyService(NamedTuple):
     addr: str
     port: int
+    api_key: str
 
 
 TOOLNAME: str = "ascratch"
@@ -26,5 +27,5 @@ class ToolContainer(containers.DeclarativeContainer):
     )
 
     service: providers.Singleton[MyService] = providers.Singleton(
-        MyService, config.service.addr, config.service.port
+        MyService, config.service.addr, config.service.port, config.service.api_key
     )

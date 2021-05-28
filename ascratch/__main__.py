@@ -47,7 +47,11 @@ def _find_root() -> Path:
 def main() -> None:
     parser = argparse.ArgumentParser(prog=TOOLNAME)
 
-    options = parser.parse_args()
+    parser.add_argument(
+        "-k", "--api-key",
+    )
+
+    options: argparse.Namespace = parser.parse_args()
 
     wksp_dirs = dirpaths.workspace(_find_root())
     user_dirs = dirpaths.user(TOOLNAME)
@@ -63,6 +67,8 @@ def main() -> None:
         tool.config.from_dict(dict(toml.load(wksp_dirs.config / "config.toml")))
     except FileNotFoundError:
         pass
+
+    tool.config.from_dict({"service": vars(options)})
 
     tool.wire(modules=[sys.modules[__name__]])
 
