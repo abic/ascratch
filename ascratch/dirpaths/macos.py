@@ -1,0 +1,2 @@
+"""Dir paths for macOS.
+"""
