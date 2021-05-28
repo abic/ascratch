@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+cython = "*"
+uvloop = "*"
+aiohttp = "*"
+aiosqlite = "*"
+dependency-injector = "*"
+toml = "*"
+click = "*"
+
+[dev-packages]
+pipenv-setup = "*"
+pytest = "*"
+mypy = "*"
+pycodestyle = "*"
+
+[requires]
+python_version = "3.8"
