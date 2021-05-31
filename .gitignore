@@ -2,3 +2,6 @@ __pycache__
 .config
 .vscode
 .mypy_cache
+build
+dist
+*.egg-info

@@ -17,7 +17,12 @@ TOOLNAME: str = "ascratch"
 
 
 class ToolContainer(containers.DeclarativeContainer):
-    config = providers.Configuration()
+    config = providers.Configuration(
+        default={
+            "service": {"addr": "127.0.0.1", "port": 1234, "api_key": "default:key"},
+            "plugins": {"paths": {}},
+        }
+    )
 
     user_dirs: providers.Provider[UserDirPaths] = providers.Dependency(UserDirPaths)  # type: ignore
 
