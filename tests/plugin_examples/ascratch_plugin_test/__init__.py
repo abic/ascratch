@@ -1,21 +1,10 @@
-from typing import Optional
-from ascratch.plugins import CommandPlugin, register
 import click
 
-import sys
+from ascratch.plugins import commands, register
 
-class Foo(CommandPlugin):
-    def name(self) -> str:
-        return "foo"
 
-    def list_commands(self) -> str:
-        return "foobar"
-    
-    def get_command(self, name: str) -> Optional[click.Command]:
-        if name != "foobar":
-            return None
-        
-        return None
-        
+@click.command()
+def test() -> None:
+    click.echo("from plugin")
 
-register(Foo())
+register(commands("test", test))
