@@ -1,2 +1,5 @@
 [service]
 addr = "1.1.1.1"
+
+[plugins.paths]
+test = "%workspacedir%/tests/plugin_examples/"

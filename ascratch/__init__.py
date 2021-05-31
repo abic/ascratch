@@ -19,11 +19,10 @@ TOOLNAME: str = "ascratch"
 class ToolContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
 
-    # Dirs will be overriden since they're neede to load configuration.
-    user_dirs: providers.Singleton[UserDirPaths] = providers.Singleton(user, TOOLNAME)
+    user_dirs: providers.Provider[UserDirPaths] = providers.Dependency(UserDirPaths)  # type: ignore
 
-    wksp_dirs: providers.Singleton[WorkspaceDirPaths] = providers.Singleton(
-        workspace, Path(".").resolve()
+    wksp_dirs: providers.Provider[WorkspaceDirPaths] = providers.Dependency(
+        WorkspaceDirPaths
     )
 
     service: providers.Singleton[MyService] = providers.Singleton(

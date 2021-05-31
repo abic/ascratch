@@ -7,7 +7,8 @@ import sys
 import toml
 
 from pathlib import Path
-from . import TOOLNAME, ToolContainer, MyService, dirpaths
+from . import TOOLNAME, ToolContainer, MyService, dirpaths, plugins
+
 
 from typing import Any, Dict, List, Optional
 
@@ -21,6 +22,8 @@ async def run(
     wksp_dirs: dirpaths.WorkspaceDirPaths = Provide[ToolContainer.wksp_dirs],
     user_dirs: dirpaths.UserDirPaths = Provide[ToolContainer.user_dirs],
 ) -> None:
+    commands = plugins.get(plugins.CommandPlugin)  # type: ignore
+    print(commands)
     print(service)
     print(wksp_dirs.config)
     print(user_dirs.config)
@@ -46,17 +49,18 @@ def _find_root() -> Path:
 
 def _default_config(config: providers.Configuration) -> None:
     config.from_dict(
-        {"service": {"addr": "127.0.0.1", "port": 1234, "api_key": "default:key",}}
+        {
+            "service": {"addr": "127.0.0.1", "port": 1234, "api_key": "default:key",},
+            "plugins": {"paths": {},},
+        }
     )
 
 
-def _options_config(
-    config: providers.Configuration, options: argparse.Namespace
-) -> None:
+def _options_config(config: providers.Configuration, api_key: Optional[str]) -> None:
     options_config: Dict[str, Any] = {}
 
-    if options.api_key is not None:
-        options_config.setdefault("service", {})["api_key"] = options.api_key
+    if api_key is not None:
+        options_config.setdefault("service", {})["api_key"] = api_key
 
     config.from_dict(options_config)
 
@@ -68,28 +72,29 @@ def _toml_config(config: providers.Configuration, config_path: Path) -> None:
         pass
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(prog=TOOLNAME)
-
-    parser.add_argument(
-        "-k", "--api-key",
-    )
-
-    parser.add_argument("-c", "--config", type=Path)
-
-    options: argparse.Namespace = parser.parse_args()
-
+@click.command(TOOLNAME)
+@click.option("-k", "--api-key", type=str)
+@click.option("-c", "--config", type=Path)
+def main(api_key: Optional[str] = None, config: Optional[Path] = None) -> None:
     wksp_dirs = dirpaths.workspace(_find_root())
     user_dirs = dirpaths.user(TOOLNAME)
 
     tool = ToolContainer(wksp_dirs=wksp_dirs, user_dirs=user_dirs)
 
+
     _default_config(tool.config)
     _toml_config(tool.config, user_dirs.config / "config.toml")
     _toml_config(tool.config, wksp_dirs.config / "config.toml")
-    if options.config is not None:
-        _toml_config(tool.config, options.config)
-    _options_config(tool.config, options)
+    if config is not None:
+        _toml_config(tool.config, config)
+    _options_config(tool.config, api_key)
+
+    plugin_paths = [
+        path.replace("%workspacedir%", str(wksp_dirs.root))
+        for path in tool.config.plugins.paths().values()
+    ]
+
+    plugins.load_plugins(plugin_paths)
 
     tool.wire(modules=[sys.modules[__name__]])
 

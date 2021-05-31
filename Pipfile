@@ -11,12 +11,17 @@ aiosqlite = "*"
 dependency-injector = "*"
 toml = "*"
 click = "*"
+pydantic = "*"
 
 [dev-packages]
 pipenv-setup = "*"
 pytest = "*"
 mypy = "*"
 pycodestyle = "*"
+black = "*"
 
 [requires]
 python_version = "3.8"
+
+[pipenv]
+allow_prereleases = true
