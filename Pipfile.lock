@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "515c40e6b7d2a5186daeca38b018132059b427f4604bd06c520ea6613f3bba18"
+            "sha256": "6df44c34281dad256ac4f454b757ae0bea31d2aacdcd3b95eea0bb4671a4a8e9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -325,6 +325,7 @@
                 "sha256:e5e5f855c9bf483ee6cd1eb9a179b740de80cb0ae2988e3fa22309b78e2ea0e7"
             ],
             "index": "pypi",
+            "markers": "sys_platform != 'win32'",
             "version": "==0.15.2"
         },
         "yarl": {
