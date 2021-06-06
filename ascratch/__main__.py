@@ -87,4 +87,10 @@ def _init() -> None:
 
 
 if __name__ == "__main__":
+    try:
+        import uvloop
+        uvloop.install()
+    except ModuleNotFoundError:
+        # gracefully proceed when uvloop can't be loaded
+        pass
     _init()
