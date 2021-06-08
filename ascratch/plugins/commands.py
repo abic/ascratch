@@ -39,6 +39,8 @@ def commands(name: str, *cmds: click.Command) -> CommandPlugin:
     for cmd in cmds:
         if cmd.name is None:
             raise RuntimeError("Command is nameless", cmd)
+        if cmd.name in cmd_dict:
+            raise RuntimeError("Dupicate command", cmd.name)
         cmd_dict[cmd.name] = cmd
     return _CommandList(name, cmd_dict)
 

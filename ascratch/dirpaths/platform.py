@@ -1,22 +1,23 @@
 """Interfaces that platform specific dirpaths should implement
 """
 
-from abc import ABC, abstractmethod
+import appdirs
 from pathlib import Path
 
-class UserDirPaths(ABC):
+class UserDirPaths:
+    _appdirs: appdirs.AppDirs
+
+    def __init__(self, name: str) -> None:
+        self._appdirs = appdirs.AppDirs(appname=name, appauthor=False)
 
     @property
-    @abstractmethod
     def config(self) -> Path:
-        ...
+        return Path(self._appdirs.user_config_dir)
 
     @property
-    @abstractmethod
     def data(self) -> Path:
-        ...
+        return Path(self._appdirs.user_data_dir)
 
     @property
-    @abstractmethod
     def cache(self) -> Path:
-        ...
+        return Path(self._appdirs.user_cache_dir)

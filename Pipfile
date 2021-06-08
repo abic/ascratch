@@ -12,6 +12,7 @@ dependency-injector = "*"
 toml = "*"
 click = "*"
 pydantic = "*"
+appdirs = "*"
 
 [dev-packages]
 pipenv-setup = "*"

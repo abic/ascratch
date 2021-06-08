@@ -9,7 +9,6 @@ This module should be a generic way to answer all those questions.
 
 from .platform import UserDirPaths
 from .workspace import WorkspaceDirPaths
-from .xdg import XDGDirPaths
 
 import sys
 
@@ -17,10 +16,7 @@ from pathlib import Path
 
 
 def user(name: str) -> UserDirPaths:
-    if sys.platform == "linux":
-        return XDGDirPaths(name)
-    else:
-        raise NotImplementedError
+    return UserDirPaths(name)
 
 
 def workspace(root: Path) -> WorkspaceDirPaths:

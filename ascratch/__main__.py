@@ -8,13 +8,10 @@ import toml
 from dependency_injector import providers
 from dependency_injector.wiring import inject, Provide
 from pathlib import Path
-from typing import Dict
 
 from . import dirpaths, plugins
-from .cli import CLI
 from .container import ToolContainer
 from .service import MyService
-from ascratch import cli
 
 
 @inject
@@ -90,7 +87,7 @@ if __name__ == "__main__":
     try:
         import uvloop
         uvloop.install()
-    except ModuleNotFoundError:
+    except ImportError:
         # gracefully proceed when uvloop can't be loaded
         pass
     _init()
